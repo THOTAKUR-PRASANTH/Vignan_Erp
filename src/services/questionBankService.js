@@ -4,6 +4,7 @@ const QuestionLogsDao = require('../dao/QuestionLogDAO.js');
 const Questionlogs = require('../models/QuestionLogsModel.js');
 const Question = require('../models/QuestionModel.js');
 const QuestionBank = require('../models/QuestionBankModel.js');
+const FileDAO = require('../dao/FileDAO.js');
 
 class QuestionBankService{
 
@@ -11,6 +12,7 @@ class QuestionBankService{
         this.questionBankDao = new QuestionBankDao();
         this.questionDao = new QuestionDao();
         this.questionLogsDao = new QuestionLogsDao();
+        this.fileDao = new FileDAO();
     }
 
     // uplodes or create the new question bank
@@ -77,18 +79,20 @@ class QuestionBankService{
     //addQuestiontoSpecificQuestionBank
     addQuestionToBank = async (questionBankId, questionData, files, userEmail) => {
         try {
-            const newQuestion = new this.questionDao.create(questionData);
-
-            // Process image fields (optional, if there are files uploaded)
+            const questionBank = await this.questionBankDao.findById(questionBankId);
+            if (!questionBank) {
+                throw new Error("Question bank not found.");
+            }
+            const newQuestion = new Question(questionData);
+        
             const imageFields = ["questiondesc", "option1", "option2", "option3", "option4"];
             for (const field of imageFields) {
                 if (files && files.some((file) => file.fieldname === field)) {
                     const file = files.find((file) => file.fieldname === field);
                     const encryptedFile = encryptBuffer(file.buffer);
                     const fileDoc = new File({ file: encryptedFile, size: file.size });
-                    await fileDoc.save();
+                    await this.fileDao.create(fileDoc);
 
-                    // Assign the file reference to the question field
                     newQuestion[field] = {
                         originalName: file.originalname,
                         ref: fileDoc._id,
@@ -96,27 +100,22 @@ class QuestionBankService{
                 } else if (questionData[field]) {
                     newQuestion[field] = questionData[field];
                 } else {
-                    newQuestion[field] = "manual_image";  // Default fallback value
+                    newQuestion[field] = "manual_image";  
                 }
             }
-
             const savedQuestion = await this.questionDao.create(newQuestion);
 
-            const questionBank = await this.questionBankDao.findById(questionBankId);
-            if (!questionBank) {
-                throw new Error("Question bank not found.");
-            }
+           
 
             questionBank.questions.push(savedQuestion._id);
             await this.questionBankDao.update(questionBankId, { questions: questionBank.questions });
 
-            // Log the action of adding the question
             await new Questionlogs({
                 questionId: savedQuestion._id,
                 userEmail,
                 action: "ADDED_QUESTION_TO_QUESTION_BANK",
             }).save();
-
+            console.log("____End of addQuestionToBank_____")
             return questionBank; 
         } catch (error) {
             console.error("Error in addQuestionToBank service:", error);

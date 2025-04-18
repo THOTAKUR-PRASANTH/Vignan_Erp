@@ -99,20 +99,23 @@ class QuestionBankHandler{
 
     addQuestionToQuestionBank = async (req, res) => {
         try {
-            const { id: questionBankId } = req.params; // Extracting question bank ID from URL parameter
-            const userEmail = req.email || null; // Assuming the user email is stored in req.email
+            const { id: questionBankId } = req.params; 
+            const userEmail =  "tprashanth312@gmail.com"; 
 
-            // Call the service layer to add the question to the question bank
+
+            console.log("Here is the form data:", req.body);
+            console.log("Uploaded file info:", req.file);
+
+
             const result = await this.questionBankService.addQuestionToBank(
                 questionBankId,
-                req.body,  // Request body contains question details
-                req.files, // Request files contain the question images or files (if any)
-                userEmail  // User email to log the action
+                req.body,  
+                req.files, 
+                userEmail  
             );
-
             return res.status(201).json({
                 message: "Question added successfully.",
-                questionBank: result,  // Returning updated question bank
+                questionBank: result,  
             });
         } catch (error) {
             console.error("Error adding question:", error);
