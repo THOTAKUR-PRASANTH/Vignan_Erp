@@ -124,8 +124,27 @@ class QuestionBankService{
     }
 
 
+// get all the questionbanks
+getQuestionBanks = async () => {
+    try {
+        const questionBanks = await this.questionBankDao.findAll();
+        return questionBanks;
+    } catch (error) {
+        console.error("Error fetching questionbanks:", error);
+        throw error;
+    }
+}
 
-
+// get questionbankWithQuestionsById
+questionBankWithQuestions = async (id) => {
+    try {
+        const questionBank = await this.questionBankDao.findByIdWithQuestions(id);
+        return questionBank;
+    } catch (error) {
+        console.error("Error fetching questionbankWithQuestions:", error);
+        throw error;
+    }
+}
 
 
 

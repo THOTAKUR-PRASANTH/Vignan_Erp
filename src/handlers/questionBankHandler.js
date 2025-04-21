@@ -97,8 +97,24 @@ class QuestionBankHandler{
         }
     }
 
+    // add question to the question bank
     addQuestionToQuestionBank = async (req, res) => {
         try {
+
+            if (!req.file) {
+                return res.status(400).send(
+                    {
+                        status: "Failure",
+                        message: "No file uploaded",
+                        code: "400",
+                    });
+            }  
+            else{
+                console.log("File details:", req.file);
+                console.log("File buffer:", req.file.buffer);
+                console.log("File size:", req.file.size);
+
+            }
             const { id: questionBankId } = req.params; 
             const userEmail =  "tprashanth312@gmail.com"; 
 
@@ -123,9 +139,41 @@ class QuestionBankHandler{
         }
     }
 
-
+// get all the question banks
+getQuestionBanks = async (req, res) => {
+    console.log("QuestionBankHandler - Start of getQuestionBanks")
+    const questionBank = await this.questionBankService.getQuestionBanks();
+    if (!questionBank) {
+        return res.status(404).json({
+            status: 'failure',
+            message: 'No question banks found.',
+        });
+    }
+    res.status(200).json({
+        status: 'success',
+        message: 'Question banks retrieved successfully.',
+        data: questionBank,
+    });
+}
  
-
+// get questionbankWithQuestionsById
+questionBankWithQuestionsById = async (req, res) => {
+    console.log("QuestionBankHandler - Start of questionBankWithQuestionsById")
+    const { id } = req.params;
+    const questionBankWithQuestions = await this.questionBankService.questionBankWithQuestions(id);
+    if (!questionBankWithQuestions) {
+        return res.status(404).json({
+            status: 'failure',
+            message: 'No questionbank found under given id',
+        });
+    }
+    res.status(200).json({
+        status: 'success',
+        message: 'QuestionbankWithQuestions retrieved successfully.',
+        data: questionBankWithQuestions,
+    });
+}
+ 
 
 
 

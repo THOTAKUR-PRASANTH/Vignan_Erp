@@ -19,7 +19,7 @@ app.disable('x-powered-by');
 app.disable('etag');
 app.set('trust proxy', true);
 
- app.use(formData.parse());
+/*app.use(formData.parse());*/
 //app.use(morgan('combined', { stream: winston.stream }));
 //app.use(bodyParser.json({ limit: '100mb', parameterLimit: 100000 }));
 //app.use(bodyParser.urlencoded({ limit: '100mb', extended: true, parameterLimit: 100000 }));

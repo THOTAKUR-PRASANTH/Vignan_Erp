@@ -24,6 +24,32 @@ class QuestionBankDao{
                 console.error("QuestionBank - findbyId ||  Error : ", error.message);
                 throw error;
             }
+        }
+
+
+    findByIdWithQuestions =  async(id) => {
+        try{
+            console.log("QuestionBankDao - Inside of findByIdWithQuestions ");
+            const persistanceData = await QuestionBankModel.findById(id).populate("questions");
+            console.log("QuestionBankDao - End of findByIdWithQuestions");
+            return persistanceData;
+        } catch(error) {
+            console.error("QuestionBank - findbyId ||  Error : ", error.message);
+            throw error;
+        }
+    }
+
+
+    findAll = async () => {
+            try{
+                console.log("QuestionBankDao - Inside of findAll");
+                const persistanceData = await QuestionBankModel.find();
+                console.log("QuestionBankDao - End of findAll");
+                return persistanceData;
+            } catch(error) {
+                console.error("QuestionBank - findAll ||  Error : ", error.message);
+                throw error;
+            }
            
         }
           
