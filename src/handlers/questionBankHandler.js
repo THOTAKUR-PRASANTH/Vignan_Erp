@@ -23,7 +23,8 @@ class QuestionBankHandler{
                         message: "No file uploaded",
                         code: "400",
                     });
-            }      
+            }   
+    
         const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
         const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
         if (sheetData.length === 0) {
@@ -111,8 +112,7 @@ class QuestionBankHandler{
             }  
             else{
                 console.log("File details:", req.file);
-                console.log("File buffer:", req.file.buffer);
-                console.log("File size:", req.file.size);
+               
 
             }
             const { id: questionBankId } = req.params; 
